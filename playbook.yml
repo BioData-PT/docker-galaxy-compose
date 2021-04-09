@@ -1,6 +1,62 @@
 - hosts: localhost
   connection: local
-  vars: {}
+  vars:
+    # Use galaxy root layout which has a mutable data dir. Having a defined
+    # mutable data dir is essential for using it with docker volumes.
+    galaxy_layout: root
+    galaxy_root: "/galaxy"
+    galaxy_venv_dir: "{{ galaxy_root }}/venv"
+    galaxy_server_dir: "{{ galaxy_root }}/server"
+    galaxy_mutable_data_dir: "{{ galaxy_root }}/var"
+    galaxy_tool_dependency_dir: "{{ galaxy_mutable_data_dir }}/dependencies"
+
+
+    # Install miniconda to use for both conda and as virtualenv python.
+    miniconda_prefix: "{{ galaxy_root }}/conda"
+    miniconda_installer_python: "3.7"  # All testing is done on 3.7 at this moment.
+    galaxy_virtualenv_python: "{{ miniconda_prefix }}/bin/python3"
+
+    # galaxyproject.galaxy settings.
+    galaxy_config_style: yaml
+    galaxy_manage_database: true  # Setup a basic sqlite database
+    galaxy_manage_clone: false  # This is handled by the top level docker script
+    pip_extra_args: "--no-cache-dir --compile"
+    galaxy_manage_existing: true
+    galaxy_client_make_target: client-production
+
+    galaxy_config:
+      # Uwsgi settings copied from best practice on https://github.com/galaxyproject/ansible-galaxy
+      uwsgi:
+        socket: 127.0.0.1:4001
+        http: 0.0.0.0:8080
+        buffer-size: 16384
+        processes: 1
+        threads: 4
+        offload-threads: 2
+        static-map:
+          - /static/style={{ galaxy_server_dir }}/static/style/blue
+          - /static={{ galaxy_server_dir }}/static
+        master: true
+        virtualenv: "{{ galaxy_venv_dir }}"
+        pythonpath: "{{ galaxy_server_dir }}/lib"
+        module: galaxy.webapps.galaxy.buildapp:uwsgi_app()
+        thunder-lock: true
+        die-on-term: true
+        hook-master-start:
+          - unix_signal:2 gracefully_kill_them_all
+          - unix_signal:15 gracefully_kill_them_all
+        py-call-osafterfork: true
+        enable-threads: true
+        mule:
+          - lib/galaxy/main.py
+          - lib/galaxy/main.py
+        farm: job-handlers:1,2
+      galaxy:
+        # Separate conda prefix in container from dependency installation dir in mutable data dir.
+        conda_exec: "{{ miniconda_prefix }}/bin/conda"
+        conda_prefix: "{{ galaxy_tool_dependency_dir }}/_conda"
+        conda_copy_dependencies: True  # Needed to separate exec and prefix.
+
   tasks:
     - name: Install miniconda
       include_role:
