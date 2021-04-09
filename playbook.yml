@@ -9,7 +9,7 @@
     galaxy_server_dir: "{{ galaxy_root }}/server"
     galaxy_mutable_data_dir: "{{ galaxy_root }}/var"
     galaxy_tool_dependency_dir: "{{ galaxy_mutable_data_dir }}/dependencies"
-
+    galaxy_manage_paths: true  # Make sure directories are created
 
     # Install miniconda to use for both conda and as virtualenv python.
     miniconda_prefix: "{{ galaxy_root }}/conda"
