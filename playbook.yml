@@ -64,3 +64,4 @@
     - name: Install galaxy
       include_role:
         name: galaxyproject.galaxy
+      tags: galaxy_build_client
