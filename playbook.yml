@@ -1,0 +1,10 @@
+- hosts: localhost
+  connection: local
+  vars: {}
+  tasks:
+    - name: Install miniconda
+      include_role:
+        name: galaxyproject.miniconda
+    - name: Install galaxy
+      include_role:
+        name: galaxyproject.galaxy
