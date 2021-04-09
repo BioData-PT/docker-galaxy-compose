@@ -13,7 +13,7 @@
 
     # Install miniconda to use for both conda and as virtualenv python.
     miniconda_prefix: "{{ galaxy_root }}/conda"
-    miniconda_installer_python: "3.7"  # All testing is done on 3.7 at this moment.
+    miniconda_installer: "Miniconda3-py37_4.9.2-Linux-x86_64.sh"  # All galaxy testing currently done on 3.7
     galaxy_virtualenv_python: "{{ miniconda_prefix }}/bin/python3"
 
     # galaxyproject.galaxy settings.
