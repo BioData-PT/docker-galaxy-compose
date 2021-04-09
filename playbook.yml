@@ -7,6 +7,7 @@
     galaxy_root: "/galaxy"
     galaxy_server_dir: "{{ galaxy_root }}/server"
     galaxy_venv_dir: "{{ galaxy_server_dir}}/.venv"
+    galaxy_config_dir: "{{ galaxy_server_dir }}/config"
     galaxy_mutable_data_dir: "{{ galaxy_root }}/var"
     galaxy_tool_dependency_dir: "{{ galaxy_mutable_data_dir }}/dependencies"
     galaxy_manage_paths: true  # Make sure directories are created
