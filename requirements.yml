@@ -1,0 +1,4 @@
+- src: https://github.com/galaxyproject/ansible-galaxy.git
+  name: galaxyproject.galaxy
+- src: https://github.com/galaxyproject/ansible-miniconda.git
+  name: galaxyproject.miniconda
