@@ -5,8 +5,8 @@
     # mutable data dir is essential for using it with docker volumes.
     galaxy_layout: root-dir
     galaxy_root: "/galaxy"
-    galaxy_venv_dir: "{{ galaxy_root }}/venv"
     galaxy_server_dir: "{{ galaxy_root }}/server"
+    galaxy_venv_dir: "{{ galaxy_server_dir}}/.venv"
     galaxy_mutable_data_dir: "{{ galaxy_root }}/var"
     galaxy_tool_dependency_dir: "{{ galaxy_mutable_data_dir }}/dependencies"
     galaxy_manage_paths: true  # Make sure directories are created
