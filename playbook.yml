@@ -61,14 +61,6 @@
     - name: Install miniconda
       include_role:
         name: galaxyproject.miniconda
-    - name: Upgrade pip and setuptools
-      command: "{{ miniconda_prefix }}/bin/conda update -y -n base pip setuptools"
-      register: upgrade_conda
-      changed_when: "'All requested packages already installed.' not in upgrade_conda.stdout"
-    - name: Clean conda environment
-      command: "{{ miniconda_prefix }}/bin/conda clean -y --all"
-      register: clean_conda
-      changed_when: "'removing' in clean_conda.stdout"
     - name: Install galaxy
       include_role:
         name: galaxyproject.galaxy

@@ -1,4 +1,5 @@
-- src: https://github.com/galaxyproject/ansible-galaxy.git
+- src: https://github.com/rhpvorderman/ansible-galaxy.git
   name: galaxyproject.galaxy
+  version: rhpvorderman-patch-1-1
 - src: https://github.com/galaxyproject/ansible-miniconda.git
   name: galaxyproject.miniconda
