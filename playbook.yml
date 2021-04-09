@@ -12,7 +12,7 @@
     galaxy_manage_paths: true  # Make sure directories are created
 
     # Install miniconda to use for both conda and as virtualenv python.
-    miniconda_prefix: "{{ galaxy_root }}/conda"
+    miniconda_prefix: "{{ galaxy_server_dir }}/conda"
     miniconda_installer: "Miniconda3-py37_4.9.2-Linux-x86_64.sh"  # All galaxy testing currently done on 3.7
     galaxy_virtualenv_python: "{{ miniconda_prefix }}/bin/python3"
 
