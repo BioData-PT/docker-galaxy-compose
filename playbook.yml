@@ -61,6 +61,7 @@
     - name: Install miniconda
       include_role:
         name: galaxyproject.miniconda
+      tags: galaxy_build_client
     - name: Install galaxy
       include_role:
         name: galaxyproject.galaxy
