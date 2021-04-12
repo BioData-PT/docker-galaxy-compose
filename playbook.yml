@@ -7,15 +7,12 @@
     galaxy_root: "/galaxy"
     galaxy_venv_dir: "{{ galaxy_root }}/venv"
     galaxy_server_dir: "{{ galaxy_root }}/server"
-    galaxy_mutable_data_dir: "{{ galaxy_root }}/var"
+    galaxy_mutable_data_dir: "{{ galaxy_root }}/data"
     galaxy_tool_dependency_dir: "{{ galaxy_mutable_data_dir }}/dependencies"
 
 
-    # Install miniconda to use for both conda and as virtualenv python.
-    miniconda_prefix: "{{ galaxy_root }}/conda"
-    miniconda_installer: "Miniconda3-py37_4.9.2-Linux-x86_64.sh"  # All testing is done on 3.7 at this moment.
-    galaxy_virtualenv_python: "{{ miniconda_prefix }}/bin/python3"
-    galaxy_virtualenv_command: "python3 -m virtualenv"
+    # Install miniconda to have preinstalled conda..
+    miniconda_prefix: "{{ galaxy_tool_dependency_dir }}/_conda"
 
     # galaxyproject.galaxy settings.
     galaxy_config_style: yaml
@@ -53,16 +50,12 @@
           - lib/galaxy/main.py
           - lib/galaxy/main.py
         farm: job-handlers:1,2
-      galaxy:
-        # Separate conda prefix in container from dependency installation dir in mutable data dir.
-        conda_exec: "{{ miniconda_prefix }}/bin/conda"
-        conda_prefix: "{{ galaxy_tool_dependency_dir }}/_conda"
-        conda_copy_dependencies: True  # Needed to separate exec and prefix.
+      galaxy: {}
 
   tasks:
-    - name: Install miniconda
-      include_role:
-        name: galaxyproject.miniconda
     - name: Install galaxy
       include_role:
         name: galaxyproject.galaxy
+    - name: Install miniconda
+      include_role:
+        name: galaxyproject.miniconda

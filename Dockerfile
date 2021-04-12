@@ -118,6 +118,7 @@ RUN set -xe; \
         vim-tiny \
         nano \
         curl \
+        python3-pip python3-setuptools python3-virtualenv \
     && locale-gen $LANG && update-locale LANG=$LANG \
     && apt-get autoremove -y && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/*
