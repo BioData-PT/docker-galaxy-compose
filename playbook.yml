@@ -3,12 +3,15 @@
   vars:
     # Use galaxy root layout which has a mutable data dir. Having a defined
     # mutable data dir is essential for using it with docker volumes.
-    galaxy_layout: root-dir
+    galaxy_layout: custom
     galaxy_root: "/galaxy"
     galaxy_venv_dir: "{{ galaxy_root }}/venv"
     galaxy_server_dir: "{{ galaxy_root }}/server"
     galaxy_mutable_data_dir: "{{ galaxy_root }}/data"
+    galaxy_config_dir: "{{ galaxy_root }}/config"
     galaxy_tool_dependency_dir: "{{ galaxy_mutable_data_dir }}/dependencies"
+    galaxy_virtualenv_python: "python3"
+    galaxy_virtualenv_command: "python3 -m virtualenv"
 
 
     # Install miniconda to have preinstalled conda..
@@ -50,7 +53,9 @@
           - lib/galaxy/main.py
           - lib/galaxy/main.py
         farm: job-handlers:1,2
-      galaxy: {}
+      galaxy:
+        config_dir: "{{ galaxy_root }}/config"
+        conda_auto_init: false
 
   tasks:
     - name: Install galaxy

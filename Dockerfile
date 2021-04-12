@@ -147,5 +147,6 @@ USER $GALAXY_USER
 
 ENV PATH="$GALAXY_VENV/bin:${PATH}"
 
+WORKDIR $GALAXY_SERVER
 # [optional] to run:
-CMD uwsgi --yaml config/galaxy.yml
+CMD uwsgi --yaml ../config/galaxy.yml
