@@ -19,7 +19,8 @@
     # galaxyproject.galaxy settings.
     galaxy_config_style: yaml
     galaxy_manage_database: true  # Setup a basic sqlite database
-    galaxy_manage_clone: false  # This is handled by the top level docker script
+    galaxy_manage_clone: true
+    galaxy_clone_depth: 1
     pip_extra_args: "--no-cache-dir --compile"
     galaxy_manage_existing: true
     galaxy_client_make_target: client-production
@@ -27,7 +28,7 @@
     galaxy_config:
       # Uwsgi settings copied from best practice on https://github.com/galaxyproject/ansible-galaxy
       uwsgi:
-        socket: 127.0.0.1:4001
+        socket: 127.0.0.1:3031
         http: 0.0.0.0:8080
         buffer-size: 16384
         processes: 1
@@ -64,4 +65,3 @@
     - name: Install galaxy
       include_role:
         name: galaxyproject.galaxy
-      tags: galaxy_build_client
