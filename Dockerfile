@@ -29,6 +29,7 @@
 ARG GALAXY_ROOT=/galaxy
 ARG GALAXY_SERVER=/galaxy/server
 ARG GALAXY_VENV=/galaxy/venv
+ARG GALAXY_DATA=/galaxy/data
 ARG GALAXY_USER=galaxy
 ARG PIP_EXTRA_ARGS="--no-cache-dir --compile"
 ARG GALAXY_COMMIT_ID=release_21.01
@@ -44,12 +45,16 @@ FROM $BASE as stage1
 ARG GALAXY_ROOT
 ARG GALAXY_SERVER
 ARG GALAXY_VENV
+ARG GALAXY_DATA
 ARG PIP_EXTRA_ARGS
 ARG GALAXY_COMMIT_ID
 ARG DEBIAN_FRONTEND=noninteractive
 
 ENV LC_ALL=en_US.UTF-8
 ENV LANG=en_US.UTF-8
+
+# Make sure a sqlite database is preinstalled for fast startup times.
+ENV GALAXY_CONFIG_DATABASE_CONNECTION="sqlite:///$GALAXY_DATA/universe.sqlite?isolation_level=IMMEDIATE"
 
 RUN apt-get update
 # Git for cloning. Pip setuptools for ansible. Virtualenv for ansible virtualenv tasks.
@@ -68,7 +73,8 @@ RUN ansible-galaxy install -r requirements.yml -p roles --force-with-deps
 
 RUN ansible-playbook -i localhost playbook.yml -v -e galaxy_root=$GALAXY_ROOT \
     -e galaxy_server_dir=$GALAXY_SERVER -e galaxy_venv_dir=$GALAXY_VENV \
-    -e pip_extra_args="$PIP_EXTRA_ARGS" -e galaxy_commit_id=$GALAXY_COMMIT_ID
+    -e pip_extra_args="$PIP_EXTRA_ARGS" -e galaxy_commit_id=$GALAXY_COMMIT_ID \
+    -e galaxy_mutable_data_dir=$GALAXY_DATA
 
 # Install conditional requirements:
 # psycopg2 -> for postgres databases
@@ -105,10 +111,11 @@ ARG GALAXY_ROOT
 ARG GALAXY_SERVER
 ARG GALAXY_USER
 ARG GALAXY_VENV
-
+ARG GALAXY_DATA
 # Init Env
 ENV LC_ALL=en_US.UTF-8
 ENV LANG=en_US.UTF-8
+ENV GALAXY_CONFIG_DATABASE_CONNECTION="sqlite:///$GALAXY_DATA/universe.sqlite?isolation_level=IMMEDIATE"
 
 # Install python-virtualenv
 RUN set -xe; \
