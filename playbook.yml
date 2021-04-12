@@ -3,7 +3,7 @@
   vars:
     # Use galaxy root layout which has a mutable data dir. Having a defined
     # mutable data dir is essential for using it with docker volumes.
-    galaxy_layout: root
+    galaxy_layout: root-dir
     galaxy_root: "/galaxy"
     galaxy_venv_dir: "{{ galaxy_root }}/venv"
     galaxy_server_dir: "{{ galaxy_root }}/server"
@@ -13,16 +13,17 @@
 
     # Install miniconda to use for both conda and as virtualenv python.
     miniconda_prefix: "{{ galaxy_root }}/conda"
-    miniconda_installer_python: "3.7"  # All testing is done on 3.7 at this moment.
+    miniconda_installer: "Miniconda3-py37_4.9.2-Linux-x86_64.sh"  # All testing is done on 3.7 at this moment.
     galaxy_virtualenv_python: "{{ miniconda_prefix }}/bin/python3"
+    galaxy_virtualenv_command: "python3 -m virtualenv"
 
     # galaxyproject.galaxy settings.
     galaxy_config_style: yaml
     galaxy_manage_database: true  # Setup a basic sqlite database
+    galaxy_manage_paths: true
     galaxy_manage_clone: true
     galaxy_clone_depth: 1
     pip_extra_args: "--no-cache-dir --compile"
-    galaxy_manage_existing: true
     galaxy_client_make_target: client-production
 
     galaxy_config:

@@ -41,14 +41,25 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 FROM $BASE as stage1
 
+ARG GALAXY_ROOT
+ARG GALAXY_SERVER
+ARG GALAXY_VENV
+ARG PIP_EXTRA_ARGS
+ARG GALAXY_COMMIT_ID
+ARG DEBIAN_FRONTEND=noninteractive
+
 ENV LC_ALL=en_US.UTF-8
 ENV LANG=en_US.UTF-8
 
 RUN apt-get update
+# Git for cloning. Pip setuptools for ansible. Virtualenv for ansible virtualenv tasks.
+# Bzip2 make for client build (tar.bz2 archives, makefile).
 RUN apt-get install -y --no-install-recommends \
     locales locales-all \
-    python3-pip
-RUN pip install ansible~=2.9
+    git \
+    python3-pip python3-setuptools python3-virtualenv \
+    bzip2 make
+RUN pip3 install --upgrade setuptools pip && pip3 install 'ansible>=2.9,<2.10'
 
 WORKDIR /tmp/ansible
 ADD ./playbook.yml .
@@ -57,7 +68,7 @@ RUN ansible-galaxy install -r requirements.yml -p roles --force-with-deps
 
 RUN ansible-playbook -i localhost playbook.yml -v -e galaxy_root=$GALAXY_ROOT \
     -e galaxy_server_dir=$GALAXY_SERVER -e galaxy_venv_dir=$GALAXY_VENV \
-    -e pip_extra_args=$PIP_EXTRA_ARGS -e galaxy_commit_id=$GALAXY_COMMIT_ID
+    -e pip_extra_args="$PIP_EXTRA_ARGS" -e galaxy_commit_id=$GALAXY_COMMIT_ID
 
 # Install conditional requirements:
 # psycopg2 -> for postgres databases
@@ -90,8 +101,8 @@ RUN find . -name "node_modules" -type d -prune -exec rm -rf '{}' +
 
 FROM $BASE as stage2
 
-ARG ROOT_DIR
-ARG SERVER_DIR
+ARG GALAXY_ROOT
+ARG GALAXY_SERVER
 ARG GALAXY_USER
 ARG GALAXY_VENV
 
@@ -101,9 +112,9 @@ ENV LANG=en_US.UTF-8
 
 # Install python-virtualenv
 RUN set -xe; \
-    && echo "Acquire::http {No-Cache=True;};" > /etc/apt/apt.conf.d/no-cache \
+    echo "Acquire::http {No-Cache=True;};" > /etc/apt/apt.conf.d/no-cache \
     && apt-get -qq update && apt-get install -y --no-install-recommends \
-        locales \
+        locales locales-all \
         vim-tiny \
         nano \
         curl \
@@ -113,13 +124,13 @@ RUN set -xe; \
 
 RUN set -xe; \
       adduser --system --group $GALAXY_USER \
-      && mkdir -p $SERVER_DIR \
-      && chown $GALAXY_USER:$GALAXY_USER $ROOT_DIR -R
+      && mkdir -p $GALAXY_SERVER \
+      && chown $GALAXY_USER:$GALAXY_USER $GALAXY_ROOT -R
 
-WORKDIR $ROOT_DIR
+WORKDIR $GALAXY_ROOT
 # Copy galaxy files to final image
 # The chown value MUST be hardcoded (see #35018 at github.com/moby/moby)
-COPY --chown=galaxy:galaxy --from=server_build $ROOT_DIR .
+COPY --chown=galaxy:galaxy --from=stage1 $GALAXY_ROOT .
 
 # Expose http and uwsgi socket
 EXPOSE 8080
