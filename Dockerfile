@@ -31,7 +31,7 @@ ARG GALAXY_SERVER=/galaxy/server
 ARG GALAXY_VENV=/galaxy/venv
 ARG GALAXY_USER=galaxy
 ARG PIP_EXTRA_ARGS="--no-cache-dir --compile"
-ARG GALAXY_BRANCH=release_21.01
+ARG GALAXY_COMMIT_ID=release_21.01
 ARG BASE=debian:buster-slim
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -57,7 +57,7 @@ RUN ansible-galaxy install -r requirements.yml -p roles --force-with-deps
 
 RUN ansible-playbook -i localhost playbook.yml -v -e galaxy_root=$GALAXY_ROOT \
     -e galaxy_server_dir=$GALAXY_SERVER -e galaxy_venv_dir=$GALAXY_VENV \
-    -e pip_extra_args=$PIP_EXTRA_ARGS
+    -e pip_extra_args=$PIP_EXTRA_ARGS -e galaxy_commit_id=$GALAXY_COMMIT_ID
 
 # Install conditional requirements:
 # psycopg2 -> for postgres databases
