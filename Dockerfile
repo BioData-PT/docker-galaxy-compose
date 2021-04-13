@@ -68,6 +68,8 @@ WORKDIR /tmp/ansible
 ENV LC_ALL en_US.UTF-8
 ADD ./playbook.yml .
 ADD ./requirements.yml .
+ADD files ./files
+
 RUN ansible-galaxy install -r requirements.yml -p roles --force-with-deps
 
 RUN ansible-playbook -i localhost playbook.yml -v -e galaxy_root=$GALAXY_ROOT \

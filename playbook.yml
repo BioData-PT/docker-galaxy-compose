@@ -25,7 +25,9 @@
     galaxy_clone_depth: 1
     pip_extra_args: "--no-cache-dir --compile"
     galaxy_client_make_target: client-production
-
+    galaxy_config_files:
+      - src: files/welcome.html
+        dest: "{{ galaxy_server_dir }}/static/welcome.html"
     galaxy_config:
       # Uwsgi settings copied from best practice on https://github.com/galaxyproject/ansible-galaxy
       uwsgi:
