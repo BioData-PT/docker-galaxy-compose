@@ -34,6 +34,7 @@ ARG GALAXY_USER=galaxy
 ARG PIP_EXTRA_ARGS="--no-cache-dir --compile"
 ARG GALAXY_COMMIT_ID=release_21.01
 ARG BASE=debian:buster-slim
+ARG FINAL_STAGE_BASE=debian:buster
 ARG DEBIAN_FRONTEND=noninteractive
 
 ###############################################################################
@@ -64,6 +65,7 @@ RUN apt-get install -y --no-install-recommends \
 RUN pip3 install --upgrade setuptools pip && pip3 install 'ansible>=2.9,<2.10'
 
 WORKDIR /tmp/ansible
+ENV LC_ALL en_US.UTF-8
 ADD ./playbook.yml .
 ADD ./requirements.yml .
 RUN ansible-galaxy install -r requirements.yml -p roles --force-with-deps
@@ -87,16 +89,16 @@ RUN cat $GALAXY_SERVER/lib/galaxy/dependencies/conditional-requirements.txt | \
 WORKDIR $GALAXY_SERVER
 RUN git rev-parse HEAD > GITREVISION
 RUN rm -rf \
-        .ci \
-        .git \
-        .venv/include/node \
-        .venv/src/node* \
-        doc \
-        test \
-        test-data
+        $GALAXY_SERVER/.ci \
+        $GALAXY_SERVER/.git \
+        $GALAXY_VENV/include/node \
+        $GALAXY_VENV/src/node* \
+        $GALAXY_SERVER/doc \
+        $GALAXY_SERVER/test \
+        $GALAXY_SERVER/test-data
 
 # Clean up *all* node_modules, including plugins.  Everything is already built+staged.
-RUN find . -name "node_modules" -type d -prune -exec rm -rf '{}' +
+RUN find $GALAXY_SERVER -name "node_modules" -type d -prune -exec rm -rf '{}' +
 
 ###############################################################################
 # Stage 2
@@ -120,11 +122,12 @@ ENV GALAXY_CONFIG_DATABASE_CONNECTION="sqlite:///$GALAXY_DATA/universe.sqlite?is
 RUN set -xe; \
     echo "Acquire::http {No-Cache=True;};" > /etc/apt/apt.conf.d/no-cache \
     && apt-get -qq update && apt-get install -y --no-install-recommends \
-        locales locales-all \
+        locales \
         vim-tiny \
         nano \
         curl \
         python3-pip python3-setuptools python3-virtualenv \
+    && echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen \
     && locale-gen $LANG && update-locale LANG=$LANG \
     && apt-get autoremove -y && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/*
