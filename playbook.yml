@@ -19,7 +19,7 @@
 
     # galaxyproject.galaxy settings.
     galaxy_config_style: yaml
-    galaxy_manage_database: true  # Setup a basic sqlite database
+    galaxy_manage_database: false
     galaxy_manage_paths: true
     galaxy_manage_clone: true
     galaxy_clone_depth: 1

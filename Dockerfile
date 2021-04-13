@@ -53,9 +53,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL=en_US.UTF-8
 ENV LANG=en_US.UTF-8
 
-# Make sure a sqlite database is preinstalled for fast startup times.
-ENV GALAXY_CONFIG_DATABASE_CONNECTION="sqlite:///$GALAXY_DATA/universe.sqlite?isolation_level=IMMEDIATE"
-
 RUN apt-get update
 # Git for cloning. Pip setuptools for ansible. Virtualenv for ansible virtualenv tasks.
 # Bzip2 make for client build (tar.bz2 archives, makefile).
@@ -115,6 +112,8 @@ ARG GALAXY_DATA
 # Init Env
 ENV LC_ALL=en_US.UTF-8
 ENV LANG=en_US.UTF-8
+
+# Ensure a default sqlite database ends up in the galaxy_data directory.
 ENV GALAXY_CONFIG_DATABASE_CONNECTION="sqlite:///$GALAXY_DATA/universe.sqlite?isolation_level=IMMEDIATE"
 
 # Install python-virtualenv
