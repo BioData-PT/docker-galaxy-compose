@@ -3,32 +3,35 @@
   vars:
     # Use galaxy root layout which has a mutable data dir. Having a defined
     # mutable data dir is essential for using it with docker volumes.
-    galaxy_layout: root-dir
+    galaxy_layout: custom
     galaxy_root: "/galaxy"
+    galaxy_venv_dir: "{{ galaxy_root }}/venv"
     galaxy_server_dir: "{{ galaxy_root }}/server"
-    galaxy_venv_dir: "{{ galaxy_server_dir}}/.venv"
-    galaxy_config_dir: "{{ galaxy_server_dir }}/config"
-    galaxy_mutable_data_dir: "{{ galaxy_root }}/var"
+    galaxy_mutable_data_dir: "{{ galaxy_root }}/data"
+    galaxy_config_dir: "{{ galaxy_root }}/config"
     galaxy_tool_dependency_dir: "{{ galaxy_mutable_data_dir }}/dependencies"
-    galaxy_manage_paths: true  # Make sure directories are created
+    galaxy_virtualenv_python: "python3"
+    galaxy_virtualenv_command: "python3 -m virtualenv"
 
-    # Install miniconda to use for both conda and as virtualenv python.
-    miniconda_prefix: "{{ galaxy_root }}/conda"
-    miniconda_installer: "Miniconda3-py37_4.9.2-Linux-x86_64.sh"  # All galaxy testing currently done on 3.7
-    galaxy_virtualenv_python: "{{ miniconda_prefix }}/bin/python3"
+
+    # Install miniconda to have preinstalled conda..
+    miniconda_prefix: "{{ galaxy_tool_dependency_dir }}/_conda"
 
     # galaxyproject.galaxy settings.
     galaxy_config_style: yaml
-    galaxy_manage_database: true  # Setup a basic sqlite database
-    galaxy_manage_clone: false  # This is handled by the top level docker script
+    galaxy_manage_database: false
+    galaxy_manage_paths: true
+    galaxy_manage_clone: true
+    galaxy_clone_depth: 1
     pip_extra_args: "--no-cache-dir --compile"
-    galaxy_manage_existing: true
     galaxy_client_make_target: client-production
-
+    galaxy_config_files:
+      - src: files/welcome.html
+        dest: "{{ galaxy_server_dir }}/static/welcome.html"
     galaxy_config:
       # Uwsgi settings copied from best practice on https://github.com/galaxyproject/ansible-galaxy
       uwsgi:
-        socket: 127.0.0.1:4001
+        socket: 0.0.0.0:3031
         http: 0.0.0.0:8080
         buffer-size: 16384
         processes: 1
@@ -53,19 +56,13 @@
           - lib/galaxy/main.py
         farm: job-handlers:1,2
       galaxy:
-        # Separate conda prefix in container from dependency installation dir in mutable data dir.
-        conda_exec: "{{ miniconda_prefix }}/bin/conda"
-        conda_prefix: "{{ galaxy_tool_dependency_dir }}/_conda"
-        conda_copy_dependencies: True  # Needed to separate exec and prefix.
+        config_dir: "{{ galaxy_root }}/config"
+        conda_auto_init: false
 
   tasks:
-    - name: Install miniconda
-      include_role:
-        name: galaxyproject.miniconda
-        apply:
-          tags: galaxy_build_client
-      tags: galaxy_build_client
     - name: Install galaxy
       include_role:
         name: galaxyproject.galaxy
-      tags: galaxy_build_client
+    - name: Install miniconda
+      include_role:
+        name: galaxyproject.miniconda

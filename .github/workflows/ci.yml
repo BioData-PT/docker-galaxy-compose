@@ -1,0 +1,35 @@
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  schedule:
+    # Build at 6 o'clock in the evening, UTC time on sundays.
+    # Providing a fresh image for next week. And providing a chance to debug
+    # the entire week in case of failure.
+    - cron: '0 18 * * 0'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - commit_id: release_21.01
+            tags: lumc/galaxy-compose:21.01,lumc/galaxy-compose:latest
+          - commit_id: dev
+            tags: lumc/galaxy-compose:dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+      - name: Build image
+        uses: docker/build-push-action@v2
+        with:
+          build-args: "GALAXY_COMMIT_ID=${{ matrix.commit_id }}"
+          tags: ${{ matrix.tags }}
+          push: github.event_name == 'push' or github.event_name == 'schedule'

@@ -1,0 +1,62 @@
+version: "3.3"
+networks:
+  galaxy_network:
+volumes:
+  postgres-data:
+  galaxy-data:
+  galaxy-static:
+  galaxy-plugins:
+services:
+  db:
+    # Check postgres container information here: https://hub.docker.com/_/postgres
+    image: "postgres:9.6"
+    environment:
+      POSTGRES_USER: dbuser
+      POSTGRES_ROOT_PASSWORD: secret
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: galaxydb
+    networks:
+      - galaxy_network
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  web:
+    image: "lumc/galaxy-compose:21.01"
+    environment:
+      # Database connection URL information can be found here: https://docs.sqlalchemy.org/en/13/core/engines.html#database-urls
+      # WARNING: An empty connection url such as "postgresql://" will not work with sqlalchemy. At least host and db need to be there.
+      GALAXY_CONFIG_DATABASE_CONNECTION: "postgresql://db/galaxydb?client_encoding=utf8"
+      # Check postgres connection variables here: https://www.postgresql.org/docs/current/libpq-envars.html
+      PGUSER: dbuser
+      PGPASSWORD: secret
+    volumes:
+      - galaxy-data:/galaxy/data
+      - galaxy-static:/galaxy/server/static
+      - galaxy-plugins:/galaxy/server/config/plugins
+    networks:
+      - galaxy_network
+    depends_on:
+      - db
+
+  proxy:
+    image: "nginx:1.16"
+    volumes:
+    - type: bind
+      source: ./galaxy.nginx
+      target: /etc/nginx/conf.d/default.conf
+    - type: volume
+      source: galaxy-static
+      target: /galaxy/server/static
+      read_only: true
+    - type: volume
+      source: galaxy-plugins
+      target: /galaxy/server/config/plugins
+      read_only: true
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - galaxy_network
+    depends_on:
+      - web
+
