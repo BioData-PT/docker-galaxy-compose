@@ -31,7 +31,7 @@
     galaxy_config:
       # Uwsgi settings copied from best practice on https://github.com/galaxyproject/ansible-galaxy
       uwsgi:
-        socket: 127.0.0.1:3031
+        socket: 0.0.0.0:3031
         http: 0.0.0.0:8080
         buffer-size: 16384
         processes: 1
