@@ -32,4 +32,4 @@ jobs:
         with:
           build-args: "GALAXY_COMMIT_ID=${{ matrix.commit_id }}"
           tags: ${{ matrix.tags }}
-          push: github.event_name == 'push' or github.event_name == 'schedule'
+          push: ${{ github.event_name == 'push' or github.event_name == 'schedule' }}
