@@ -15,9 +15,9 @@ jobs:
       matrix:
         include:
           - commit_id: release_21.01
-            tags: 21.01,latest
+            tags: lumc/galaxy-compose:21.01,lumc/galaxy-compose:latest
           - commit_id: dev
-            tags: dev
+            tags: lumc/galaxy-compose:dev
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx
