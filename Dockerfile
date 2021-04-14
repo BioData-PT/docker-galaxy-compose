@@ -125,7 +125,7 @@ RUN set -xe; \
     && apt-get -qq update && apt-get install -y --no-install-recommends \
         locales \
         vim-tiny \
-        nano \
+        nano-tiny \
         curl \
         python3-pip python3-setuptools python3-virtualenv libpython3.7 \
     && echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen \
