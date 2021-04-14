@@ -9,6 +9,16 @@ jobs:
     strategy:
       matrix:
         include:
-          - branch: release_21.01
-            tags: latest
-
+          - commit_id: release_21.01
+            tags: 21.01,latest
+          - commit_id: dev
+            tags: dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+    - uses: docker/build-push-action@v2
+      with:
+        build_args: "GALAXY_COMMIT_ID=${{ matrix.commit_id }}"
+        tags: ${{ matrix.tags }}
+        push: false
