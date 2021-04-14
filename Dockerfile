@@ -33,7 +33,7 @@ ARG GALAXY_DATA=/galaxy/data
 ARG GALAXY_USER=galaxy
 ARG PIP_EXTRA_ARGS="--no-cache-dir --compile"
 ARG GALAXY_COMMIT_ID=release_21.01
-ARG BASE=debian:buster-slim
+ARG BASE=python:3.7-slim
 ARG DEBIAN_FRONTEND=noninteractive
 
 ###############################################################################
@@ -53,15 +53,13 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL=en_US.UTF-8
 ENV LANG=en_US.UTF-8
 
-RUN apt-get update
 # Git for cloning. Pip setuptools for ansible. Virtualenv for ansible virtualenv tasks.
 # Bzip2 make for client build (tar.bz2 archives, makefile).
-RUN apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     locales locales-all \
     git \
-    python3-pip python3-setuptools python3-virtualenv python3-dev \
-    bzip2 make gcc
-RUN pip3 install --upgrade setuptools pip wheel && pip3 install 'ansible>=2.9,<2.10'
+    bzip2 make gcc libc-dev \
+    && pip install virtualenv 'ansible>=2.9,<2.10'
 
 WORKDIR /tmp/ansible
 ENV LC_ALL en_US.UTF-8
@@ -127,7 +125,6 @@ RUN set -xe; \
         vim-tiny \
         nano-tiny \
         curl \
-        python3-pip python3-setuptools python3-virtualenv libpython3.7 \
     && echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen \
     && locale-gen $LANG && update-locale LANG=$LANG \
     && apt-get autoremove -y && apt-get clean \
