@@ -59,9 +59,9 @@ RUN apt-get update
 RUN apt-get install -y --no-install-recommends \
     locales locales-all \
     git \
-    python3-pip python3-setuptools python3-virtualenv \
+    python3-pip python3-setuptools python3-virtualenv python3-dev \
     bzip2 make
-RUN pip3 install --upgrade setuptools pip && pip3 install 'ansible>=2.9,<2.10'
+RUN pip3 install --upgrade setuptools pip wheel && pip3 install 'ansible>=2.9,<2.10'
 
 WORKDIR /tmp/ansible
 ENV LC_ALL en_US.UTF-8
