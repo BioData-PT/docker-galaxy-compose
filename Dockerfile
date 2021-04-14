@@ -34,7 +34,6 @@ ARG GALAXY_USER=galaxy
 ARG PIP_EXTRA_ARGS="--no-cache-dir --compile"
 ARG GALAXY_COMMIT_ID=release_21.01
 ARG BASE=debian:buster-slim
-ARG FINAL_STAGE_BASE=debian:buster
 ARG DEBIAN_FRONTEND=noninteractive
 
 ###############################################################################
