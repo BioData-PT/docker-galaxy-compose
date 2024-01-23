@@ -33,7 +33,7 @@ ARG GALAXY_DATA=/galaxy/data
 ARG GALAXY_USER=galaxy
 ARG PIP_EXTRA_ARGS="--no-cache-dir --compile"
 ARG GALAXY_COMMIT_ID=release_23.1.4
-ARG BASE=python:3.8-slim
+ARG BASE=python:3.10-slim
 ARG DEBIAN_FRONTEND=noninteractive
 
 ###############################################################################
@@ -59,7 +59,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     locales locales-all \
     git \
     bzip2 make gcc libc-dev \
-    && pip install virtualenv 'ansible>=2.9,<2.10'
+    && pip install virtualenv ansible
 
 WORKDIR /tmp/ansible
 ENV LC_ALL en_US.UTF-8
