@@ -42,7 +42,7 @@ docker run -it \
 -v galaxy-data:/galaxy/data \
 -p 8080:8080 \
 -e GALAXY_CONFIG_ADMIN_USERS=myname@example.org \
-lumc/galaxy-compose
+biodatapt/galaxy-compose
 ```
 
 This will create a running galaxy on http://localhost:8080. `myname@example`
