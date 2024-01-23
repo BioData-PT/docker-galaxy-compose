@@ -3,21 +3,21 @@ on:
   push:
     branches:
       - main
-  schedule:
-    # Build at 6 o'clock in the evening, UTC time on sundays.
-    # Providing a fresh image for next week. And providing a chance to debug
-    # the entire week in case of failure.
-    - cron: '0 18 * * 0'
+  # schedule:
+  #   # Build at 6 o'clock in the evening, UTC time on sundays.
+  #   # Providing a fresh image for next week. And providing a chance to debug
+  #   # the entire week in case of failure.
+  #   - cron: '0 18 * * 0'
 
 jobs:
   build:
     strategy:
       matrix:
         include:
-          - commit_id: release_21.01
-            tags: lumc/galaxy-compose:21.01,lumc/galaxy-compose:latest
+          - commit_id: release_23.1.4
+            tags: biodatapt/galaxy-compose:23.1.4,biodatapt/galaxy-compose:latest
           - commit_id: dev
-            tags: lumc/galaxy-compose:dev
+            tags: biodatapt/galaxy-compose:dev
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx

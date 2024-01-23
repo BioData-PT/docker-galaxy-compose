@@ -21,7 +21,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
 
   web:
-    image: "lumc/galaxy-compose:21.01"
+    image: "biodatapt/galaxy-compose:23.1.4"
     environment:
       # Database connection URL information can be found here: https://docs.sqlalchemy.org/en/13/core/engines.html#database-urls
       # WARNING: An empty connection url such as "postgresql://" will not work with sqlalchemy. At least host and db need to be there.

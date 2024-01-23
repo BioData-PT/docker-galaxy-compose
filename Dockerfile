@@ -32,8 +32,8 @@ ARG GALAXY_VENV=/galaxy/venv
 ARG GALAXY_DATA=/galaxy/data
 ARG GALAXY_USER=galaxy
 ARG PIP_EXTRA_ARGS="--no-cache-dir --compile"
-ARG GALAXY_COMMIT_ID=release_21.01
-ARG BASE=python:3.7-slim
+ARG GALAXY_COMMIT_ID=release_23.1.4
+ARG BASE=python:3.8-slim
 ARG DEBIAN_FRONTEND=noninteractive
 
 ###############################################################################
